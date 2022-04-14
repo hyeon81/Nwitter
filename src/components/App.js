@@ -1,14 +1,26 @@
 import Router from "./Router";
 import AppRouter from "./Router";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {authService} from "../mybase";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(authService.currentUser);
-    {/* 뭐야 왜 ;붙이지말래 */}
-  return (
-    <AppRouter isLoggedIn={isLoggedIn}/>
-  );
+    const [init, setInit] = useState(false); //아직은 초기화되지 않음
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    useEffect(() => {
+        authService.onAuthStateChanged((user) => {
+            if (user) {
+                setIsLoggedIn(true);
+            } else {
+                setIsLoggedIn(false);
+            }
+            setInit(true);
+        });
+    })
+    return (
+        <>
+            {init ? <AppRouter isLoggedIn={isLoggedIn}/> : "Initalizing..."}
+        </>
+    );
 }
 
 export default App;
